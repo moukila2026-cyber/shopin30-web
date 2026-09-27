@@ -16,4 +16,11 @@ export default defineConfig({
       "@": path.resolve(__dirname, "src"),
     },
   },
+  // Aperçu (npm run preview / dev) accessible depuis un proxy externe
+  preview: {
+    allowedHosts: [".e2b.app"],
+  },
+  server: {
+    allowedHosts: [".e2b.app"],
+  },
 });
