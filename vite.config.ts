@@ -6,7 +6,11 @@ import { defineConfig } from "vite";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const siteBase = process.env.GITHUB_PAGES === "true" ? "/shopin30-web/" : "/";
+const siteBase = process.env.GITHUB_PAGES === "true"
+  ? "/shopin30-web/"
+  : process.env.STATIC_PREVIEW === "true"
+    ? "./"
+    : "/";
 
 export default defineConfig({
   base: siteBase,
