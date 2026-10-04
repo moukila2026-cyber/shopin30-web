@@ -1,136 +1,93 @@
-// ============================================================
-// SHOPIN30 — Fonction serverless Vercel : /api/commandes
-//
-// Reçoit la commande du site, la valide, puis la relaie vers
-// Airtable avec le jeton AIRTABLE_TOKEN (caché côté serveur,
-// défini dans Vercel → Settings → Environment Variables).
-//
-// Le jeton n'apparaît JAMAIS dans le code envoyé au navigateur.
-// ============================================================
+// API Vercel — enregistrement sécurisé des demandes dans Supabase.
+// SUPABASE_SERVICE_ROLE_KEY est uniquement utilisée sur le serveur.
 
-/** Conversion id (site/app/crm) → libellé EXACT du select Airtable */
 const SERVICE_LABELS = {
-  site: "Site web",
-  app: "Application web",
+  site: "Site web professionnel",
+  app: "Application web sur mesure",
   crm: "CRM connecté à WhatsApp",
 };
-
-const DEFAULT_BASE_ID = "appRmYF6r2HGZzTWY";
-const DEFAULT_TABLE = "Commandes";
-const MAX_LENGTH = 200;
+const MAX_LENGTH = 180;
 
 function json(res, status, payload) {
-  res.status(status).setHeader("Content-Type", "application/json; charset=utf-8");
-  res.send(JSON.stringify(payload));
+  res
+    .status(status)
+    .setHeader("Content-Type", "application/json; charset=utf-8")
+    .setHeader("Cache-Control", "no-store")
+    .send(JSON.stringify(payload));
 }
 
-function cleanString(value) {
-  return typeof value === "string" ? value.trim().slice(0, MAX_LENGTH) : "";
+function clean(value, maxLength = MAX_LENGTH) {
+  return typeof value === "string" ? value.trim().replace(/[\u0000-\u001F\u007F]/g, "").slice(0, maxLength) : "";
 }
 
 export default async function handler(req, res) {
-  // CORS : appels same-origin en pratique, mais on reste permissif sans risque
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  if (req.method === "OPTIONS") return res.status(204).end();
+  if (req.method !== "POST") return json(res, 405, { ok: false, error: "Méthode non autorisée." });
 
-  if (req.method === "OPTIONS") {
-    return res.status(204).end();
-  }
-  if (req.method !== "POST") {
-    return json(res, 405, { ok: false, error: "Méthode non autorisée" });
-  }
-
-  // ---- Lecture + validation des champs ----
   let body = req.body;
   if (typeof body === "string") {
     try {
       body = JSON.parse(body || "{}");
     } catch {
-      return json(res, 400, { ok: false, error: "Corps de requête invalide" });
+      return json(res, 400, { ok: false, error: "La demande est invalide." });
     }
   }
-  body = body ?? {};
-
-  const nom = cleanString(body.nom);
-  const prenom = cleanString(body.prenom);
-  const entreprise = cleanString(body.entreprise);
-  const telephone = cleanString(body.telephone);
-  const service = typeof body.service === "string" ? body.service : "";
-  const serviceLabel = SERVICE_LABELS[service];
-
-  const missing = [];
-  if (!nom) missing.push("Nom");
-  if (!prenom) missing.push("Prénom");
-  if (!telephone) missing.push("Téléphone");
-  if (missing.length > 0) {
-    return json(res, 400, {
-      ok: false,
-      error: `Champs manquants : ${missing.join(", ")}`,
-    });
-  }
-  if (telephone.replace(/\D/g, "").length < 8) {
-    return json(res, 400, { ok: false, error: "Numéro de téléphone invalide" });
-  }
-  if (!serviceLabel) {
-    return json(res, 400, {
-      ok: false,
-      error: "Service inconnu (attendu : site, app ou crm)",
-    });
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    return json(res, 400, { ok: false, error: "La demande est invalide." });
   }
 
-  // ---- Jeton serveur ----
-  const token = process.env.AIRTABLE_TOKEN;
-  if (!token) {
-    console.error("[/api/commandes] AIRTABLE_TOKEN manquant dans l'environnement");
-    return json(res, 500, {
+  const nom = clean(body.nom, 100);
+  const prenom = clean(body.prenom, 100);
+  const entreprise = clean(body.entreprise, 160);
+  const telephone = clean(body.telephone, 40);
+  const serviceId = typeof body.service === "string" ? body.service : "";
+  const service = SERVICE_LABELS[serviceId];
+
+  if (!nom || !prenom || !telephone) {
+    return json(res, 400, { ok: false, error: "Merci de renseigner le nom, le prénom et le téléphone." });
+  }
+  const phoneDigits = telephone.replace(/\D/g, "");
+  if (phoneDigits.length < 8 || phoneDigits.length > 15) {
+    return json(res, 400, { ok: false, error: "Le numéro de téléphone ne semble pas valide." });
+  }
+  if (!service) return json(res, 400, { ok: false, error: "Choisissez un service proposé par SHOPIN30." });
+
+  const supabaseUrl = process.env.SUPABASE_URL?.replace(/\/$/, "");
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!supabaseUrl || !serviceKey) {
+    console.error("[/api/commandes] Variables Supabase manquantes.");
+    return json(res, 503, {
       ok: false,
-      error:
-        "Configuration serveur incomplète (AIRTABLE_TOKEN). Ajoutez-la dans Vercel → Settings → Environment Variables, puis redeployez.",
+      error: "L'enregistrement des demandes n'est pas encore configuré. Contactez-nous directement sur WhatsApp.",
     });
   }
 
-  const baseId = process.env.AIRTABLE_BASE_ID || DEFAULT_BASE_ID;
-  const table = process.env.AIRTABLE_TABLE || DEFAULT_TABLE;
-
-  // ---- Relais vers Airtable ----
   try {
-    const airtableRes = await fetch(
-      `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(table)}`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          fields: {
-            Nom: nom,
-            "Prénom": prenom,
-            Entreprise: entreprise,
-            "Téléphone": telephone,
-            Service: serviceLabel,
-          },
-        }),
+    const supabaseResponse = await fetch(`${supabaseUrl}/rest/v1/commandes`, {
+      method: "POST",
+      headers: {
+        apikey: serviceKey,
+        Authorization: `Bearer ${serviceKey}`,
+        "Content-Type": "application/json",
+        Prefer: "return=minimal",
       },
-    );
+      body: JSON.stringify({ nom, prenom, entreprise: entreprise || null, telephone, service }),
+    });
 
-    if (!airtableRes.ok) {
-      const detail = await airtableRes.text();
-      console.error(`[/api/commandes] Airtable ${airtableRes.status} : ${detail}`);
+    if (!supabaseResponse.ok) {
+      console.error(`[/api/commandes] Supabase a répondu avec le statut ${supabaseResponse.status}.`);
       return json(res, 502, {
         ok: false,
-        error:
-          "Airtable a refusé l'enregistrement. Vérifiez les noms de colonnes (Nom, Prénom, Entreprise, Téléphone, Service) et les valeurs du select Service.",
+        error: "La demande n'a pas pu être enregistrée. Réessayez ou contactez-nous sur WhatsApp.",
       });
     }
 
-    return json(res, 200, { ok: true });
-  } catch (err) {
-    console.error("[/api/commandes] Erreur réseau vers Airtable :", err);
+    return json(res, 201, { ok: true });
+  } catch (error) {
+    console.error("[/api/commandes] Erreur de connexion à Supabase:", error);
     return json(res, 502, {
       ok: false,
-      error: "Impossible de joindre Airtable. Réessayez dans un instant.",
+      error: "Connexion à la base indisponible. Réessayez dans un instant ou écrivez-nous sur WhatsApp.",
     });
   }
 }

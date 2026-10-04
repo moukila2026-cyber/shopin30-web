@@ -1,134 +1,74 @@
-# SHOPIN30 — Guide : Airtable + GitHub + Vercel (formulaire connecté)
+# SHOPIN30 — guide Supabase et mise en ligne
 
-> Le formulaire du site envoie chaque commande dans votre base Airtable.
-> Base ID : `appRmYF6r2HGZzTWY` — Table : `Commandes`
-> Endpoint : `https://api.airtable.com/v0/appRmYF6r2HGZzTWY/Commandes`
-> Durée totale : ~15 minutes.
+Ce dépôt est prêt à enregistrer les demandes du formulaire dans Supabase. La base utilise le nom de table `public.commandes` et une fonction Vercel pour garder la clé secrète côté serveur.
 
----
+> **Organisation Supabase dédiée :** une organisation et un projet Supabase sont des ressources externes à ce dépôt. Ils doivent être créés depuis le compte Supabase du propriétaire du projet. Aucun identifiant Supabase n'est présent dans ce checkout. Ce guide décrit la configuration à faire une seule fois, sans demander de partager une clé secrète dans le chat.
 
-## PARTIE 1 — Airtable : créer le jeton d'accès (5 min)
+## 1. Créer l'environnement Supabase dédié
 
-### 1.1 Vérifier votre table `Commandes`
-Votre table doit contenir ces colonnes (noms EXACTS, avec accents) :
-| Colonne | Type |
+1. Connectez-vous à [supabase.com](https://supabase.com) avec le compte qui doit posséder le projet.
+2. Créez une nouvelle organisation réservée à SHOPIN30, puis un nouveau projet à l'intérieur.
+3. Gardez le nom du projet et la région choisis pour le déploiement. Définissez un mot de passe fort pour la base et conservez-le dans votre gestionnaire de mots de passe.
+4. Dans **SQL Editor**, ouvrez une nouvelle requête et exécutez le contenu du fichier :
+   `supabase/migrations/20261004000000_create_commandes.sql`.
+5. Dans **Table Editor**, vérifiez que `public.commandes` est créée avec les colonnes `nom`, `prenom`, `entreprise`, `telephone`, `service` et `created_at`.
+
+La table applique la sécurité RLS : les visiteurs peuvent uniquement insérer une demande. Les demandes ne sont pas lisibles depuis la clé publique.
+
+## 2. Configurer les secrets de production
+
+Dans Supabase, ouvrez les réglages du projet et récupérez :
+
+- l'URL du projet, par exemple `https://<project-ref>.supabase.co` ;
+- la clé secrète JWT `service_role` du projet.
+
+Dans Vercel → **Project → Settings → Environment Variables**, ajoutez pour Production, Preview et Development :
+
+| Nom | Valeur | Exposition |
+|---|---|---|
+| `SUPABASE_URL` | URL du projet Supabase | Serveur uniquement |
+| `SUPABASE_SERVICE_ROLE_KEY` | Clé secrète du projet | Serveur uniquement — jamais `VITE_` |
+
+Enregistrez, puis redéployez le projet. `api/commandes.js` valide les champs et envoie les demandes à Supabase. La clé secrète n'est jamais incluse dans le JavaScript du navigateur.
+
+### Test local Vite (facultatif)
+
+Pour tester le formulaire avec `npm run dev`, créez `.env.local` depuis `.env.example` et renseignez :
+
+```dotenv
+VITE_SUPABASE_URL=https://<project-ref>.supabase.co
+VITE_SUPABASE_ANON_KEY=<clé publique anon du projet>
+```
+
+Cette clé publique est limitée par la politique RLS de la migration : insertion uniquement, pas de lecture. Ne mettez jamais la clé `service_role` dans une variable `VITE_`.
+
+## 3. Déployer le site sur Vercel
+
+1. Importez le dépôt GitHub dans Vercel. Le framework Vite est détecté automatiquement.
+2. Vérifiez les paramètres de build : commande `npm run build`, dossier de sortie `dist`.
+3. Ajoutez les deux variables serveur de la section précédente avant ou après le premier déploiement.
+4. Déclenchez **Deploy** ou **Redeploy** après l'ajout des variables.
+
+Le fichier `vercel.json` garde la configuration des fonctions API. `/api/commandes` est la route utilisée par le formulaire de production.
+
+## 4. Vérifier l'enregistrement
+
+1. Ouvrez le site déployé et remplissez Nom, Prénom, Téléphone et Type de service.
+2. Après l'envoi, le site confirme la réception uniquement si Supabase a enregistré la ligne.
+3. Dans Supabase → **Table Editor → commandes**, vérifiez la nouvelle demande et sa date.
+4. Testez aussi le lien WhatsApp flottant et le parcours mobile.
+
+Si l'enregistrement ne fonctionne pas, vérifiez l'URL, la clé serveur, le nom `public.commandes`, l'exécution complète de la migration et le dernier déploiement Vercel. La clé `service_role` ne doit être ajoutée qu'aux variables serveur de l'hébergeur.
+
+## Données enregistrées
+
+| Colonne | Contenu |
 |---|---|
-| `Nom` | Single line text |
-| `Prénom` | Single line text |
-| `Entreprise` | Single line text |
-| `Téléphone` | Single line text (ou Phone) |
-| `Service` | Single select avec EXACTEMENT : `Site web`, `Application web`, `CRM connecté à WhatsApp` |
-| `Date de commande` | Created time (automatique) ✅ déjà géré |
-| `Statut` | Single select + valeur par défaut (automatique) ✅ déjà géré |
+| `id` | Identifiant UUID généré par Supabase |
+| `nom`, `prenom` | Nom et prénom du demandeur |
+| `entreprise` | Nom de l'entreprise / business (facultatif) |
+| `telephone` | Numéro avec indicatif pays |
+| `service` | Site web professionnel, Application web sur mesure ou CRM connecté à WhatsApp |
+| `created_at` | Date de réception, générée automatiquement |
 
-⚠️ Si un nom diffère (espace, accent, majuscule), Airtable refusera l'enregistrement. Le site envoie exactement : `Nom, Prénom, Entreprise, Téléphone, Service`.
-
-### 1.2 Créer le Personal Access Token
-1. Allez sur **https://airtable.com** → cliquez votre **avatar** (bas gauche) → **Builder Hub** → **Personal access tokens** → **Create token**.
-2. Renseignez :
-   - **Name** : `shopin30-site`
-   - **Scopes** : cochez `data.records:read` + `data.records:write`
-   - **Access** : **uniquement** votre base SHOPIN30 (`appRmYF6r2HGZzTWY`)
-3. **Create token** → **copiez le jeton** (`patXXXXXXXX...`). Il ne s'affichera qu'une fois !
-4. Envoyez-le-moi séparément (WhatsApp) OU collez-le vous-même à l'étape Vercel ci-dessous.
-   - ⛔ Ne le postez jamais en public, ne le commitez jamais dans Git.
-
----
-
-## PARTIE 2 — GitHub : mettre le projet en ligne (5 min)
-
-### 2.1 Créer le dépôt
-1. **https://github.com/new** → **Repository name** : `shopin30-site` → **Public** (ou Private) → **Create repository**.
-2. Gardez l'URL (ex. `https://github.com/votre-pseudo/shopin30-site.git`).
-
-### 2.2 Pousser le code
-Dans un terminal, à la racine du projet :
-
-```bash
-git init
-git add .
-git commit -m "Site SHOPIN30 : formulaire connecte a Airtable"
-git branch -M main
-git remote add origin https://github.com/votre-pseudo/shopin30-site.git
-git push -u origin main
-```
-
-> Mises à jour suivantes : `git add .` → `git commit -m "description"` → `git push` (Vercel redéploie seul ✅).
->
-> ⚠️ Ne commitez JAMAIS un fichier `.env` contenant le jeton. Vérifiez `.gitignore` :
-> ```
-> node_modules
-> dist
-> .env
-> .env.local
-> ```
-
----
-
-## PARTIE 3 — Vercel : site en ligne + jeton caché (5 min)
-
-### 3.1 Importer le projet
-1. **https://vercel.com** → Sign Up avec GitHub → **Add New… → Project** → **Import** `shopin30-site`.
-2. Framework : **Vite** (auto-détecté). Laissez `npm run build` / `dist`.
-
-### 3.2 Ajouter le jeton CÔTÉ SERVEUR (jeton caché ✅)
-Avant **Deploy**, ouvrez **Environment Variables** et ajoutez :
-| Name | Value | Environnements |
-|---|---|---|
-| `AIRTABLE_TOKEN` | `patXXXXXXXX...` (votre jeton) | Production + Preview + Development |
-
-> Notez : `AIRTABLE_TOKEN` **SANS** préfixe `VITE_` → il reste sur le serveur Vercel,
-> utilisé uniquement par `api/commandes.js`. Il n'apparaît JAMAIS dans le code du navigateur.
-> (Optionnel : `AIRTABLE_BASE_ID` et `AIRTABLE_TABLE` si vous changez de base un jour.)
-
-Cliquez **Deploy**.
-
-### 3.3 Vérifier que tout marche
-1. Ouvrez votre URL Vercel (ex. `https://shopin30-site.vercel.app`) sur **Android, iPhone, tablette, PC**.
-2. Remplissez le formulaire → vous devez voir :
-   **« Votre commande a bien été reçue, nous vous contactons rapidement. »** ✅
-3. Dans **Airtable → Commandes** : votre ligne apparaît avec Nom, Prénom, Entreprise, Téléphone, Service + Date/Statut auto. ✅
-4. Testez un bouton **-30%** puis chaque bouton **WhatsApp** (`wa.me/2250501303343`).
-
-### 3.4 Test local (optionnel)
-```bash
-# .env (jamais commité !)
-VITE_AIRTABLE_TOKEN=patXXXXXXXX...   # test local uniquement
-```
-`npm run dev` → testez le formulaire → la ligne arrive dans Airtable.
-Pour tester le proxy serverless en local : `npx vercel dev` (avec `AIRTABLE_TOKEN` dans `.env`).
-
----
-
-## Comment ça marche (résumé technique)
-
-```
-Visiteur remplit le formulaire
-        │  POST /api/commandes { nom, prenom, entreprise, telephone, service }
-        ▼
-Vercel (api/commandes.js) — AIRTABLE_TOKEN caché côté serveur
-  • valide les champs
-  • convertit site/app/crm → "Site web" / "Application web" / "CRM connecté à WhatsApp"
-        │  POST https://api.airtable.com/v0/appRmYF6r2HGZzTWY/Commandes
-        │  Authorization: Bearer <jeton>  +  { fields: { Nom, Prénom, Entreprise, Téléphone, Service } }
-        ▼
-Airtable → nouvelle ligne dans Commandes (+ Date de commande / Statut auto)
-        │
-        ▼
-Site affiche : « Votre commande a bien été reçue, nous vous contactons rapidement. »
-```
-
-- **Sans proxy** (hébergeur statique pur) : le site tente l'appel direct avec `VITE_AIRTABLE_TOKEN` si défini.
-- **Sans aucune config** : stockage local de secours (démo), aucune commande perdue.
-- En cas d'échec Airtable : sauvegarde locale + message d'erreur clair (on vous invite à réessayer / WhatsApp).
-
-## En cas de problème
-| Symptôme | Cause probable | Solution |
-|---|---|---|
-| Message d'erreur à l'envoi | `AIRTABLE_TOKEN` absent sur Vercel | Vercel → Settings → Environment Variables → ajouter → **Redeploy** |
-| Erreur 502 « Airtable a refusé » | Nom de colonne différent | Vérifiez `Nom, Prénom, Entreprise, Téléphone, Service` au caractère près |
-| Erreur 502 « Airtable a refusé » | Valeur Service inconnue | Le select doit contenir exactement `Site web`, `Application web`, `CRM connecté à WhatsApp` |
-| Erreur 401/403 | Jeton invalide ou scope insuffisant | Recréez le token avec `data.records:read` + `data.records:write` sur cette base |
-| Build Vercel en échec | Erreur de code | Vérifiez `npm run build` en local d'abord |
-
-Bonne mise en ligne ! 🚀
+La politique RLS autorise l'insertion publique nécessaire au formulaire, mais n'accorde ni consultation ni modification des commandes avec la clé `anon`.
