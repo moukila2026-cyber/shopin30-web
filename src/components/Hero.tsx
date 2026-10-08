@@ -1,5 +1,4 @@
 import {
-  ArrowDownRight,
   ArrowRight,
   BarChart3,
   CircleCheck,
@@ -106,9 +105,6 @@ export default function Hero() {
           <div className="hero-actions">
             <a className="button button-primary button-large" href={orderLink} target="_blank" rel="noopener noreferrer">
               Commander votre projet <ArrowRight aria-hidden="true" size={18} />
-            </a>
-            <a className="button button-outline button-large" href="#realisations">
-              Voir nos réalisations <ArrowDownRight aria-hidden="true" size={17} />
             </a>
           </div>
           <div className="hero-footnote">
