@@ -1,6 +1,5 @@
 import {
   ArrowRight,
-  BarChart3,
   CircleCheck,
   FileText,
   LayoutDashboard,
@@ -16,13 +15,21 @@ const BARS = [34, 48, 39, 62, 48, 73, 58, 83, 66, 95, 75, 100];
 
 function InterfacePreview() {
   return (
-    <div className="hero-visual" data-reveal role="img" aria-label="Aperçu illustratif d'un tableau de bord métier">
+    <div className="hero-visual" data-reveal>
       <div className="visual-grid" aria-hidden="true" />
       <div className="visual-orbit visual-orbit-one" aria-hidden="true" />
       <div className="visual-orbit visual-orbit-two" aria-hidden="true" />
+      <figure className="hero-local-card">
+        <img
+          src={`${import.meta.env.BASE_URL}images/hero-entrepreneur-abidjan.jpg`}
+          alt="Entrepreneuse ivoirienne au travail, entre ordinateur et smartphone, dans un espace lumineux à Abidjan."
+          fetchPriority="high"
+        />
+        <figcaption><span>ABIDJAN · CÔTE D'IVOIRE</span><strong>Le digital, au plus près de votre activité.</strong></figcaption>
+      </figure>
       <div className="preview-label"><span className="preview-label-dot" /> APERÇU D'INTERFACE</div>
 
-      <div className="browser-window hero-browser">
+      <div className="browser-window hero-browser" role="img" aria-label="Maquette illustrative d'un tableau de bord métier, avec suivi d'activité et messages clients">
         <div className="browser-topbar">
           <div className="browser-dots" aria-hidden="true"><i /><i /><i /></div>
           <div className="browser-address"><span>secure</span> espace-client.africa</div>
@@ -77,7 +84,6 @@ function InterfacePreview() {
         <span><strong>Message centralisé</strong><small>Votre équipe garde le fil.</small></span>
         <span className="notification-check"><CircleCheck size={16} /></span>
       </div>
-      <div className="floating-tag"><BarChart3 size={15} /><span>Un outil à votre image</span></div>
       <p className="visual-caption">Exemple d'interface métier conçue selon vos besoins</p>
     </div>
   );

@@ -3,6 +3,7 @@ import Header from "./components/Header";
 import Hero from "./components/Hero";
 import Services from "./components/Services";
 import WhyUs from "./components/WhyUs";
+import LocalApproach from "./components/LocalApproach";
 import Growth from "./components/Growth";
 import Realisations from "./components/Realisations";
 import Process from "./components/Process";
@@ -81,6 +82,7 @@ export default function App() {
         <Hero />
         <Services onSelect={selectServiceAndScroll} />
         <WhyUs />
+        <LocalApproach />
         <Growth />
         <Realisations />
         <Process />
