@@ -112,13 +112,15 @@ function KaissePreview() {
 
 const PROJECTS = [
   {
-    name: "comptaCI",
-    type: "Outil de gestion",
+    name: "ComptaCI",
+    url: "https://comptaci.vercel.app",
+    type: "SaaS de gestion",
     description: "Une interface de pilotage conçue pour rendre les informations de gestion plus claires et accessibles.",
     component: ComptaPreview,
   },
   {
-    name: "Kaisse",
+    name: "KAISSE",
+    url: "https://kaissseapp.vercel.app",
     type: "Application métier",
     description: "Un projet applicatif pensé autour des opérations quotidiennes, avec une expérience adaptée aux écrans mobiles.",
     component: KaissePreview,
@@ -131,11 +133,11 @@ export default function Realisations() {
       <div className="container">
         <div className="section-heading section-heading-row" data-reveal>
           <div><p className="eyebrow"><span className="eyebrow-dash" /> NOS RÉALISATIONS</p><h2>Des projets concrets.<br /><span>Des interfaces utiles.</span></h2></div>
-          <p className="section-lead">comptaCI et Kaisse illustrent notre approche : concevoir des outils numériques fonctionnels, pensés pour les usages de terrain.</p>
+          <p className="section-lead">Découvrez deux SaaS déjà réalisés par SHOPIN30 : ComptaCI et KAISSE.</p>
         </div>
 
         <div className="projects-grid">
-          {PROJECTS.map(({ name, type, description, component: Preview }, index) => (
+          {PROJECTS.map(({ name, url, type, description, component: Preview }, index) => (
             <article className="project-card" key={name} data-reveal>
               <div className="project-card-head"><span className="project-type">{type}</span><span className="project-index">0{index + 1} / PROJET</span></div>
               <Preview />
@@ -143,6 +145,9 @@ export default function Realisations() {
               <div className="project-info">
                 <div className="project-title-row"><h3>{name}</h3><span className="project-status"><i /> Conçu & fonctionnel</span></div>
                 <p>{description}</p>
+                <a className="project-open-link" href={url} target="_blank" rel="noopener noreferrer">
+                  Découvrir {name} <ArrowUpRight size={15} aria-hidden="true" />
+                </a>
               </div>
             </article>
           ))}

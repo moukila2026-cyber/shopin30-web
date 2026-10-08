@@ -17,7 +17,7 @@ const BARS = [34, 48, 39, 62, 48, 73, 58, 83, 66, 95, 75, 100];
 
 function InterfacePreview() {
   return (
-    <div className="hero-visual" data-reveal aria-label="Aperçu illustratif d'un tableau de bord métier">
+    <div className="hero-visual" data-reveal role="img" aria-label="Aperçu illustratif d'un tableau de bord métier">
       <div className="visual-grid" aria-hidden="true" />
       <div className="visual-orbit visual-orbit-one" aria-hidden="true" />
       <div className="visual-orbit visual-orbit-two" aria-hidden="true" />
@@ -86,6 +86,7 @@ function InterfacePreview() {
 
 export default function Hero() {
   const contactLink = waLink("Bonjour SHOPIN30, j'aimerais parler de mon projet digital.");
+  const orderLink = waLink("Bonjour SHOPIN30, je souhaite commander un projet digital. Pouvez-vous me renseigner ?");
 
   return (
     <section className="hero-section" id="accueil">
@@ -103,8 +104,8 @@ export default function Hero() {
             SHOPIN30 conçoit des solutions digitales sur mesure pour les entreprises, PME et particuliers, partout en Afrique.
           </p>
           <div className="hero-actions">
-            <a className="button button-primary button-large" href="#commander">
-              Commander mon projet <ArrowRight aria-hidden="true" size={18} />
+            <a className="button button-primary button-large" href={orderLink} target="_blank" rel="noopener noreferrer">
+              Commander votre projet <ArrowRight aria-hidden="true" size={18} />
             </a>
             <a className="button button-outline button-large" href="#realisations">
               Voir nos réalisations <ArrowDownRight aria-hidden="true" size={17} />

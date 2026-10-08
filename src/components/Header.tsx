@@ -20,7 +20,7 @@ export function Logo() {
 export default function Header() {
   const [open, setOpen] = useState(false);
   const closeMenu = () => setOpen(false);
-  const messageLink = waLink("Bonjour SHOPIN30, je souhaite échanger sur un projet digital.");
+  const messageLink = waLink("Bonjour SHOPIN30, je souhaite commander un projet digital. Pouvez-vous me renseigner ?");
 
   return (
     <header className="site-header">
@@ -40,8 +40,8 @@ export default function Header() {
             <MessageCircle aria-hidden="true" size={17} />
             <span>WhatsApp</span>
           </a>
-          <a className="button button-small button-primary header-cta" href="#commander">
-            Commander <ArrowUpRight aria-hidden="true" size={16} />
+          <a className="button button-small button-primary header-cta" href={messageLink} target="_blank" rel="noopener noreferrer">
+            Commander votre projet <ArrowUpRight aria-hidden="true" size={16} />
           </a>
         </div>
 
@@ -64,8 +64,8 @@ export default function Header() {
               {link.label}
             </a>
           ))}
-          <a className="button button-primary mobile-cta" href="#commander" onClick={closeMenu}>
-            Commander mon projet <ArrowUpRight aria-hidden="true" size={17} />
+          <a className="button button-primary mobile-cta" href={messageLink} onClick={closeMenu} target="_blank" rel="noopener noreferrer">
+            Commander votre projet <ArrowUpRight aria-hidden="true" size={17} />
           </a>
           <a className="mobile-whatsapp" href={messageLink} target="_blank" rel="noopener noreferrer">
             <MessageCircle aria-hidden="true" size={17} /> Nous écrire sur WhatsApp

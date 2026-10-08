@@ -34,8 +34,8 @@ export const SERVICES: Service[] = [
     name: "Site web professionnel",
     tagline:
       "Pour présenter votre entreprise ou vos produits, et être visible partout, à tout moment.",
-    minPrice: 150_000,
-    maxPrice: 400_000,
+    minPrice: 100_000,
+    maxPrice: 350_000,
     scopeUnit: "pages",
     scopeQuestion: "Combien de pages environ ?",
     features: [
@@ -49,8 +49,8 @@ export const SERVICES: Service[] = [
     name: "Application web sur mesure",
     tagline:
       "Pour digitaliser vos processus et gérer votre activité plus efficacement.",
-    minPrice: 500_000,
-    maxPrice: 1_500_000,
+    minPrice: 200_000,
+    maxPrice: 400_000,
     scopeUnit: "fonctionnalités",
     scopeQuestion: "Combien de fonctionnalités clés ?",
     features: [
@@ -76,7 +76,7 @@ export const SERVICES: Service[] = [
   },
 ];
 
-/** Format français lisible sur le site, par exemple « 150 000 FCFA ». */
+/** Format français lisible sur le site, par exemple « 100 000 FCFA ». */
 export function formatFCFA(amount: number): string {
   const formatted = new Intl.NumberFormat("fr-FR", {
     maximumFractionDigits: 0,
