@@ -11,8 +11,34 @@ const NAV_LINKS = [
 
 export function Logo() {
   return (
-    <a className="brand-logo" href="#accueil" aria-label="ShopIn30 — accueil">
-      <img src={`${import.meta.env.BASE_URL}shopin30-logo.svg`} width="153" height="37" alt="ShopIn30" />
+    <a className="brand-logo" href="#accueil" aria-label="SHOPIN30 — accueil">
+      <svg viewBox="0 0 168 36" width="168" height="36" aria-hidden="true">
+        <rect width="36" height="36" rx="8" fill="#d4f926" />
+        <text
+          x="18"
+          y="18"
+          textAnchor="middle"
+          dominantBaseline="central"
+          fill="#11140a"
+          fontFamily="Archivo, Inter, Arial Black, sans-serif"
+          fontSize="20"
+          fontWeight="800"
+        >
+          S
+        </text>
+        <text
+          x="46"
+          y="18"
+          dominantBaseline="central"
+          fontFamily="Archivo, Inter, Arial Black, sans-serif"
+          fontSize="19"
+          fontWeight="800"
+          letterSpacing="-1"
+        >
+          <tspan fill="#f4f6f0">SHOPIN</tspan>
+          <tspan fill="#d4f926" dx="1">30</tspan>
+        </text>
+      </svg>
     </a>
   );
 }
