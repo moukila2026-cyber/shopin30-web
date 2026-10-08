@@ -29,6 +29,8 @@ export interface Service {
   scopeUnit: string;
   scopeQuestion: string;
   features: string[];
+  /** Informations de mise en ligne pour les sites et applications web. */
+  hostingInfo?: string;
   /** Mis en avant visuellement comme nouveauté. */
   isNew?: boolean;
   /** Service sur devis : contact direct sur WhatsApp, sans estimation ni formulaire. */
@@ -48,6 +50,8 @@ export const SERVICES: Service[] = [
     maxPrice: 350_000,
     scopeUnit: "pages",
     scopeQuestion: "Combien de pages environ ?",
+    hostingInfo:
+      "Votre propre adresse web (ex. : votreentreprise.com) et un hébergement adapté à votre site. Les coûts et renouvellements sont précisés dans le devis.",
     features: [
       "Une expérience fluide sur mobile et ordinateur",
       "Une présentation claire de votre activité ou vos produits",
@@ -64,6 +68,8 @@ export const SERVICES: Service[] = [
     maxPrice: 400_000,
     scopeUnit: "fonctionnalités",
     scopeQuestion: "Combien de fonctionnalités clés ?",
+    hostingInfo:
+      "Pour votre application web ou mini-application : un nom de domaine ou un sous-domaine, et un hébergement adapté aux fonctionnalités. Les coûts et renouvellements sont précisés dans le devis.",
     features: [
       "Des parcours adaptés à votre façon de travailler",
       "Un espace de gestion accessible en ligne",

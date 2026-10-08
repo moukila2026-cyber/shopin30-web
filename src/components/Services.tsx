@@ -58,6 +58,12 @@ function ServiceCard({ service, index, onSelect }: { service: Service; index: nu
           <li key={feature}><Check size={15} aria-hidden="true" /><span>{feature}</span></li>
         ))}
       </ul>
+      {service.hostingInfo && (
+        <div className="service-hosting-note">
+          <h4>Nom de domaine &amp; hébergement</h4>
+          <p>{service.hostingInfo}</p>
+        </div>
+      )}
       {service.contactOnly ? (
         <a
           className="service-link service-link-whatsapp"
