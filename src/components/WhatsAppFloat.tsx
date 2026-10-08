@@ -1,16 +1,17 @@
-import { MessageCircle } from "lucide-react";
+import { ArrowUpRight, MessageCircle } from "lucide-react";
 import { waLink } from "../lib/constants";
 
 export default function WhatsAppFloat() {
   return (
     <a
-      href={waLink("Bonjour SHOPIN30 👋 J'ai une question !")}
+      href={waLink("Bonjour SHOPIN30, j'aimerais parler de mon projet.")}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Discuter sur WhatsApp"
-      className="animate-pulse-ring fixed right-5 bottom-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-wa text-white shadow-xl shadow-black/40 transition-transform hover:scale-110"
+      aria-label="Contacter SHOPIN30 sur WhatsApp"
+      className="whatsapp-float"
     >
-      <MessageCircle className="h-7 w-7" />
+      <span className="whatsapp-float-label">Un projet en tête ?</span>
+      <span className="whatsapp-float-icon"><MessageCircle size={22} aria-hidden="true" /><ArrowUpRight className="whatsapp-arrow" size={12} aria-hidden="true" /></span>
     </a>
   );
 }

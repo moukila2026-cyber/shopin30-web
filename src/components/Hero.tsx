@@ -1,121 +1,125 @@
-import { ArrowRight, CheckCircle2, MessageCircle } from "lucide-react";
-import { PROMO, waLink } from "../lib/constants";
+import {
+  ArrowRight,
+  BarChart3,
+  CircleCheck,
+  FileText,
+  LayoutDashboard,
+  MessageCircle,
+  Plus,
+  Search,
+  Settings2,
+  UsersRound,
+} from "lucide-react";
+import { waLink } from "../lib/constants";
 
-const HIGHLIGHTS = [
-  "Livraison dès 7 jours",
-  "Support 7 j/7 sur WhatsApp",
-  "Wave · Orange Money · Moov",
-];
+const BARS = [34, 48, 39, 62, 48, 73, 58, 83, 66, 95, 75, 100];
+
+function InterfacePreview() {
+  return (
+    <div className="hero-visual" data-reveal role="img" aria-label="Aperçu illustratif d'un tableau de bord métier">
+      <div className="visual-grid" aria-hidden="true" />
+      <div className="visual-orbit visual-orbit-one" aria-hidden="true" />
+      <div className="visual-orbit visual-orbit-two" aria-hidden="true" />
+      <div className="preview-label"><span className="preview-label-dot" /> APERÇU D'INTERFACE</div>
+
+      <div className="browser-window hero-browser">
+        <div className="browser-topbar">
+          <div className="browser-dots" aria-hidden="true"><i /><i /><i /></div>
+          <div className="browser-address"><span>secure</span> espace-client.africa</div>
+          <div className="browser-topbar-icon"><Settings2 size={14} /></div>
+        </div>
+        <div className="dashboard-preview">
+          <aside className="dashboard-sidebar" aria-hidden="true">
+            <div className="dashboard-brand">s<span>30</span></div>
+            <div className="dashboard-side-item active"><LayoutDashboard size={15} /><span>Vue d'ensemble</span></div>
+            <div className="dashboard-side-item"><FileText size={15} /><span>Activité</span></div>
+            <div className="dashboard-side-item"><UsersRound size={15} /><span>Clients</span></div>
+            <div className="dashboard-side-item"><MessageCircle size={15} /><span>Messages</span></div>
+            <div className="dashboard-side-foot"><span className="tiny-avatar">AK</span><span>Awa Koné</span></div>
+          </aside>
+
+          <div className="dashboard-main">
+            <div className="dashboard-toolbar">
+              <div className="preview-search"><Search size={12} /><span>Rechercher</span></div>
+              <div className="dashboard-toolbar-right"><span className="toolbar-dot" /><span className="toolbar-avatar">AK</span></div>
+            </div>
+            <div className="dashboard-welcome">
+              <div><span className="dashboard-overline">ESPACE DE GESTION</span><h3>Bonjour, Awa <span>✦</span></h3></div>
+              <div className="preview-new-button"><Plus size={12} /> Nouvelle action</div>
+            </div>
+            <div className="preview-stat-grid">
+              <div className="preview-stat"><span>Demandes reçues</span><strong>38</strong><em>Ce mois</em></div>
+              <div className="preview-stat"><span>Dossiers actifs</span><strong>12</strong><em>En cours</em></div>
+              <div className="preview-stat preview-stat-accent"><span>Suivi des échanges</span><strong>À jour</strong><em><CircleCheck size={11} /> Synchronisé</em></div>
+            </div>
+            <div className="preview-lower">
+              <div className="preview-chart-card">
+                <div className="preview-card-head"><div><span>VUE D'ACTIVITÉ</span><strong>Suivi de votre activité</strong></div><span className="mini-select">7 jours⌄</span></div>
+                <div className="activity-chart" aria-hidden="true">
+                  {BARS.map((height, index) => <span key={index} style={{ height: `${height}%` }} />)}
+                </div>
+                <div className="chart-days"><span>Lun</span><span>Mar</span><span>Mer</span><span>Jeu</span><span>Ven</span><span>Sam</span><span>Dim</span></div>
+              </div>
+              <div className="preview-tasks-card">
+                <div className="preview-card-head"><div><span>À FAIRE</span><strong>Prochaines actions</strong></div><span className="task-count">03</span></div>
+                <div className="preview-task"><span className="task-check"><CircleCheck size={12} /></span><span>Rappeler un prospect</span></div>
+                <div className="preview-task"><span className="task-check"><CircleCheck size={12} /></span><span>Valider une demande</span></div>
+                <div className="preview-task"><span className="task-check empty" /><span>Envoyer un devis</span></div>
+              </div>
+            </div>
+            <div className="preview-disclaimer">MAQUETTE DE DÉMONSTRATION · DONNÉES ILLUSTRATIVES</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="floating-notification">
+        <span className="notification-icon"><MessageCircle size={17} /></span>
+        <span><strong>Message centralisé</strong><small>Votre équipe garde le fil.</small></span>
+        <span className="notification-check"><CircleCheck size={16} /></span>
+      </div>
+      <div className="floating-tag"><BarChart3 size={15} /><span>Un outil à votre image</span></div>
+      <p className="visual-caption">Exemple d'interface métier conçue selon vos besoins</p>
+    </div>
+  );
+}
 
 export default function Hero() {
+  const contactLink = waLink("Bonjour SHOPIN30, j'aimerais parler de mon projet digital.");
+  const orderLink = waLink("Bonjour SHOPIN30, je souhaite commander un projet digital. Pouvez-vous me renseigner ?");
+
   return (
-    <section className="relative overflow-hidden pt-28 pb-16 sm:pt-36 sm:pb-24">
-      {/* Halo décoratif */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-40 left-1/2 h-125 w-200 -translate-x-1/2 rounded-full bg-brand/10 blur-3xl"
-      />
-
-      <div className="relative mx-auto grid max-w-6xl items-center gap-14 px-4 sm:px-6 lg:grid-cols-2">
-        <div>
-          <p className="inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-4 py-1.5 font-code text-xs font-bold uppercase tracking-wider text-brand">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-brand" />
-            </span>
-            -{PROMO.percent} % de lancement — code {PROMO.code}
-          </p>
-
-          <h1 className="mt-6 font-display text-5xl leading-[0.95] tracking-tight text-white uppercase sm:text-6xl lg:text-7xl">
-            Sites web,
-            <br />
-            apps &amp; <span className="text-brand">CRM WhatsApp</span>
-            <br />
-            pour l'Afrique.
+    <section className="hero-section" id="accueil">
+      <div className="hero-backdrop" aria-hidden="true" />
+      <div className="container hero-grid">
+        <div className="hero-copy" data-reveal>
+          <div className="eyebrow hero-eyebrow"><span className="live-indicator" /> SITES WEB · APPLICATIONS · CRM WHATSAPP</div>
+          <h1>
+            <span className="hero-line">Votre site,</span>
+            <span className="hero-line">votre application,</span>
+            <span className="hero-line">votre CRM <em>WhatsApp,</em></span>
+            <span className="hero-line hero-last-line">prêts en quelques jours.</span>
           </h1>
-
-          <p className="mt-6 max-w-lg text-base leading-relaxed text-zinc-400 sm:text-lg">
-            SHOPIN30 conçoit des sites web, applications web et CRM connectés à
-            WhatsApp, sur mesure, pour entreprises, PME et particuliers — partout
-            en Afrique.
+          <p className="hero-description">
+            SHOPIN30 conçoit des solutions digitales sur mesure pour les entreprises, PME et particuliers, partout en Afrique.
           </p>
-
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <a
-              href="#commander"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3.5 text-sm font-bold text-ink transition-transform hover:scale-[1.02]"
-            >
-              Commander maintenant
-              <ArrowRight className="h-4 w-4" />
-            </a>
-            <a
-              href={waLink(
-                "Bonjour SHOPIN30 👋 Je veux un site / une app / un CRM WhatsApp. Comment profiter du -30 % ?",
-              )}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:border-brand/50 hover:text-brand"
-            >
-              <MessageCircle className="h-4 w-4" />
-              Écrire sur WhatsApp
+          <div className="hero-actions">
+            <a className="button button-primary button-large" href={orderLink} target="_blank" rel="noopener noreferrer">
+              Commander votre projet <ArrowRight aria-hidden="true" size={18} />
             </a>
           </div>
-
-          <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2">
-            {HIGHLIGHTS.map((item) => (
-              <li key={item} className="flex items-center gap-2 text-sm text-zinc-400">
-                <CheckCircle2 className="h-4 w-4 text-brand" />
-                {item}
-              </li>
-            ))}
-          </ul>
+          <div className="hero-footnote">
+            <span className="hero-footnote-mark"><CircleCheck size={14} /></span>
+            <span>Un premier échange, un périmètre clair et une solution vraiment adaptée.</span>
+          </div>
+          <a className="hero-direct-link" href={contactLink} target="_blank" rel="noopener noreferrer">
+            Une question avant de commencer ? <span>Écrivez-nous sur WhatsApp</span>
+          </a>
         </div>
 
-        {/* Visuel : maquette de site + bulles */}
-        <div className="relative mx-auto w-full max-w-md lg:max-w-none">
-          <div className="animate-float rounded-2xl border border-white/10 bg-panel shadow-2xl shadow-black/60">
-            {/* Barre navigateur */}
-            <div className="flex items-center gap-2 border-b border-white/5 px-4 py-3">
-              <span className="h-2.5 w-2.5 rounded-full bg-red-500/70" />
-              <span className="h-2.5 w-2.5 rounded-full bg-yellow-500/70" />
-              <span className="h-2.5 w-2.5 rounded-full bg-green-500/70" />
-              <span className="ml-3 flex-1 truncate rounded-md bg-white/5 px-3 py-1 font-code text-[10px] text-zinc-500">
-                https://votre-business.africa
-              </span>
-            </div>
-            {/* Contenu du site maquette */}
-            <div className="space-y-3 p-5">
-              <div className="h-3 w-1/3 rounded bg-brand/80" />
-              <div className="h-2.5 w-4/5 rounded bg-white/10" />
-              <div className="h-2.5 w-3/5 rounded bg-white/10" />
-              <div className="mt-4 grid grid-cols-3 gap-3">
-                <div className="h-16 rounded-lg bg-panel-2" />
-                <div className="h-16 rounded-lg bg-panel-2" />
-                <div className="h-16 rounded-lg bg-panel-2" />
-              </div>
-              <div className="mt-2 flex items-center gap-3">
-                <div className="h-9 w-28 rounded-full bg-brand" />
-                <div className="h-9 w-28 rounded-full border border-white/15" />
-              </div>
-            </div>
-          </div>
-
-          {/* Badge -30 % */}
-          <div className="absolute -top-5 -right-3 rotate-6 rounded-xl bg-brand px-4 py-2 font-display text-xl text-ink shadow-lg shadow-brand/30 sm:-right-6">
-            -{PROMO.percent} %
-          </div>
-
-          {/* Bulle WhatsApp */}
-          <div className="absolute -bottom-6 -left-3 flex items-center gap-3 rounded-2xl border border-white/10 bg-panel-2 px-4 py-3 shadow-xl shadow-black/50 sm:-left-8">
-            <span className="relative flex h-10 w-10 items-center justify-center rounded-full bg-wa">
-              <MessageCircle className="h-5 w-5 text-white" />
-            </span>
-            <div>
-              <p className="text-xs font-bold text-white">Nouvelle commande !</p>
-              <p className="font-code text-[10px] text-zinc-500">via WhatsApp · à l'instant</p>
-            </div>
-          </div>
-        </div>
+        <InterfacePreview />
+      </div>
+      <div className="hero-bottom-line container" aria-hidden="true">
+        <span>DES OUTILS UTILES, POUR DES ACTIVITÉS QUI AVANCENT</span><span className="hero-bottom-rule" /><span>01 — SHOPIN30</span>
       </div>
     </section>
   );

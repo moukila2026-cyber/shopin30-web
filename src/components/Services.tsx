@@ -1,16 +1,8 @@
-import { BadgePercent, Check, Globe, LayoutDashboard, MessageSquareText } from "lucide-react";
-import {
-  formatFCFA,
-  promoPrice,
-  PROMO,
-  SERVICES,
-  type Service,
-  type ServiceId,
-} from "../lib/constants";
-import { cn } from "../lib/utils";
+import { ArrowRight, Check, Globe2, LayoutDashboard, MessageCircle, MessageSquareText } from "lucide-react";
+import { formatFCFA, SERVICES, type Service, type ServiceId, waLink } from "../lib/constants";
 
-const ICONS: Record<ServiceId, typeof Globe> = {
-  site: Globe,
+const ICONS: Record<ServiceId, typeof Globe2> = {
+  site: Globe2,
   app: LayoutDashboard,
   crm: MessageSquareText,
 };
@@ -19,90 +11,71 @@ interface Props {
   onSelect: (service: ServiceId) => void;
 }
 
-function ServiceCard({ service, onSelect }: { service: Service; onSelect: Props["onSelect"] }) {
+function ServiceCard({ service, index, onSelect }: { service: Service; index: number; onSelect: Props["onSelect"] }) {
   const Icon = ICONS[service.id];
-  const reduced = promoPrice(service.price);
 
   return (
-    <article
-      className={cn(
-        "relative flex flex-col rounded-2xl border p-7 transition-transform hover:-translate-y-1",
-        service.highlight
-          ? "border-brand/50 bg-gradient-to-b from-brand/10 to-panel shadow-xl shadow-brand/5"
-          : "border-white/10 bg-panel",
-      )}
-    >
-      {service.highlight && (
-        <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-brand px-3 py-1 font-code text-[10px] font-bold uppercase tracking-wider text-ink">
-          Le plus demandé
-        </span>
-      )}
+    <article className={`service-card${service.id === "crm" ? " service-card-featured" : ""}`} data-reveal>
+      <div className="service-card-top">
+        <span className="service-icon"><Icon size={21} strokeWidth={1.7} aria-hidden="true" /></span>
+        <span className="service-number">0{index + 1} / 03</span>
+      </div>
+      <h3>{service.name}</h3>
+      <p className="service-description">{service.tagline}</p>
 
-      <div className="flex items-center gap-3">
-        <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand/10 text-brand">
-          <Icon className="h-5 w-5" />
-        </span>
-        <h3 className="font-head text-xl font-extrabold text-white">{service.name}</h3>
+      <div className="service-price-block">
+        <span className="price-caption">Fourchette de prix</span>
+        <p className="service-price">
+          <span>{formatFCFA(service.minPrice)}</span>
+          <span className="price-dash">—</span>
+          <span>{formatFCFA(service.maxPrice)}</span>
+        </p>
+      </div>
+      <div className="service-maintenance-note">
+        <span>MAINTENANCE</span>
+        <strong>Non incluse dans le forfait</strong>
       </div>
 
-      <p className="mt-3 text-sm leading-relaxed text-zinc-400">{service.tagline}</p>
-
-      {/* Prix */}
-      <div className="mt-5 flex items-end gap-3">
-        <span className="text-sm text-zinc-500 line-through">{formatFCFA(service.price)}</span>
-        <span className="font-display text-3xl text-brand">{formatFCFA(reduced)}</span>
-      </div>
-      <p className="mt-1 font-code text-[11px] uppercase tracking-wider text-zinc-500">
-        À partir de · -{PROMO.percent} % appliqué
-      </p>
-
-      <ul className="mt-6 flex-1 space-y-2.5">
+      <ul className="service-features">
         {service.features.map((feature) => (
-          <li key={feature} className="flex items-start gap-2.5 text-sm text-zinc-300">
-            <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
-            {feature}
-          </li>
+          <li key={feature}><Check size={15} aria-hidden="true" /><span>{feature}</span></li>
         ))}
       </ul>
-
-      <button
-        type="button"
-        onClick={() => onSelect(service.id)}
-        className={cn(
-          "mt-7 inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-bold transition-colors",
-          service.highlight
-            ? "bg-brand text-ink hover:bg-brand-dark"
-            : "border border-brand/40 text-brand hover:bg-brand/10",
-        )}
-      >
-        <BadgePercent className="h-4 w-4" />
-        Commander à -{PROMO.percent} %
+      <button type="button" className="service-link" onClick={() => onSelect(service.id)}>
+        Choisir ce service <ArrowRight size={16} aria-hidden="true" />
       </button>
     </article>
   );
 }
 
 export default function Services({ onSelect }: Props) {
+  const contactLink = waLink("Bonjour SHOPIN30, j'aimerais être conseillé sur le service le plus adapté à mon besoin et les options de maintenance.");
+
   return (
-    <section id="services" className="scroll-mt-20 py-20 sm:py-28">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="max-w-2xl">
-          <p className="font-code text-xs font-bold uppercase tracking-[0.2em] text-brand">
-            Nos services
-          </p>
-          <h2 className="mt-3 font-display text-4xl uppercase text-white sm:text-5xl">
-            Tout pour vendre en ligne
-          </h2>
-          <p className="mt-4 text-zinc-400">
-            Du simple site vitrine à l'application complète avec CRM WhatsApp :
-            une équipe, un interlocuteur, un résultat.
+    <section className="section services-section" id="services">
+      <div className="container">
+        <div className="section-heading section-heading-row" data-reveal>
+          <div>
+            <p className="eyebrow"><span className="eyebrow-dash" /> NOS SERVICES</p>
+            <h2>Le bon outil pour<br /><span>faire avancer votre activité.</span></h2>
+          </div>
+          <p className="section-lead">
+            Du site professionnel au CRM WhatsApp, chaque solution est cadrée selon votre objectif, votre budget et les besoins réels de votre activité.
           </p>
         </div>
 
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
-          {SERVICES.map((service) => (
-            <ServiceCard key={service.id} service={service} onSelect={onSelect} />
+        <div className="services-grid">
+          {SERVICES.map((service, index) => (
+            <ServiceCard key={service.id} service={service} index={index} onSelect={onSelect} />
           ))}
+        </div>
+        <p className="pricing-note" data-reveal>
+          <span className="pricing-note-icon">i</span>
+          Le tarif final dépend du nombre de pages et des fonctionnalités demandées.
+        </p>
+        <div className="service-contact-callout" data-reveal>
+          <p><strong>Pour une meilleure prise en charge, contactez-nous directement sur WhatsApp.</strong><br />Nous vous conseillerons sur le service, le périmètre et les options de maintenance.</p>
+          <a href={contactLink} target="_blank" rel="noopener noreferrer"><MessageCircle size={16} aria-hidden="true" /> Nous contacter sur WhatsApp <ArrowRight size={15} aria-hidden="true" /></a>
         </div>
       </div>
     </section>

@@ -1,237 +1,120 @@
 import { useState, type FormEvent } from "react";
-import {
-  AlertCircle,
-  CheckCircle2,
-  Loader2,
-  MessageCircle,
-  Send,
-} from "lucide-react";
-import { CommandeError, submitCommande } from "../lib/airtable";
-import {
-  PROMO,
-  SERVICE_LABELS,
-  SERVICES,
-  waLink,
-  WHATSAPP_DISPLAY,
-  type ServiceId,
-} from "../lib/constants";
-import { cn } from "../lib/utils";
+import { AlertCircle, CheckCircle2, MessageCircle } from "lucide-react";
+import { SERVICE_LABELS, SERVICES, waLink, WHATSAPP_DISPLAY, type ServiceId } from "../lib/constants";
 
-type Status = "idle" | "sending" | "sent" | "error";
+type Status = "idle" | "error";
 
 interface Props {
   service: ServiceId;
   onServiceChange: (service: ServiceId) => void;
 }
 
-const INPUT_CLASS =
-  "w-full rounded-xl border border-white/10 bg-ink px-4 py-3 text-sm text-white placeholder:text-zinc-600 outline-none transition-colors focus:border-brand/60 focus:ring-2 focus:ring-brand/20";
-
-const SUCCESS_MESSAGE =
-  "Votre commande a bien été reçue, nous vous contactons rapidement.";
+const INPUT_CLASS = "form-input";
 
 export default function OrderForm({ service, onServiceChange }: Props) {
   const [status, setStatus] = useState<Status>("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const form = event.currentTarget;
-    const data = new FormData(form);
-
+    const data = new FormData(event.currentTarget);
     const nom = String(data.get("nom") ?? "").trim();
     const prenom = String(data.get("prenom") ?? "").trim();
     const entreprise = String(data.get("entreprise") ?? "").trim();
     const telephone = String(data.get("telephone") ?? "").trim();
 
-    // Validation côté client
     if (!nom || !prenom || !telephone) {
       setStatus("error");
-      setErrorMessage("Merci de remplir au moins Nom, Prénom et Téléphone.");
+      setErrorMessage("Merci de remplir votre nom, votre prénom et votre numéro de téléphone.");
       return;
     }
-    if (telephone.replace(/\D/g, "").length < 8) {
+    const digits = telephone.replace(/\D/g, "");
+    if (digits.length < 8 || digits.length > 15) {
       setStatus("error");
-      setErrorMessage("Le numéro de téléphone semble incomplet (8 chiffres minimum).");
+      setErrorMessage("Vérifiez le numéro de téléphone (8 à 15 chiffres, indicatif pays compris).");
       return;
     }
 
-    setStatus("sending");
-    setErrorMessage("");
+    const message = [
+      "Bonjour SHOPIN30 👋",
+      "Je souhaite commander un projet digital.",
+      "",
+      `Nom : ${nom}`,
+      `Prénom : ${prenom}`,
+      `Entreprise / business : ${entreprise || "Non renseigné"}`,
+      `Téléphone : ${telephone}`,
+      `Service souhaité : ${SERVICE_LABELS[service]}`,
+      "",
+      "Merci de me contacter pour une meilleure prise en charge de ma demande.",
+    ].join("\n");
 
-    try {
-      await submitCommande({ nom, prenom, entreprise, telephone, service });
-      setStatus("sent");
-      form.reset();
-    } catch (err) {
-      setStatus("error");
-      setErrorMessage(
-        err instanceof CommandeError
-          ? err.message
-          : "Une erreur est survenue. Réessayez ou passez par WhatsApp.",
-      );
-    }
+    window.location.assign(waLink(message));
   }
 
+  const directContact = waLink("Bonjour SHOPIN30, je souhaite être accompagné pour mon projet.");
+
   return (
-    <section id="commander" className="scroll-mt-20 py-20 sm:py-28">
-      <div className="mx-auto max-w-3xl px-4 sm:px-6">
-        <div className="overflow-hidden rounded-3xl border border-brand/30 bg-gradient-to-b from-brand/10 via-panel to-panel">
-          <div className="p-7 sm:p-10">
-            <div className="text-center">
-              <p className="font-code text-xs font-bold uppercase tracking-[0.2em] text-brand">
-                Commande en 2 minutes
-              </p>
-              <h2 className="mt-3 font-display text-4xl uppercase text-white sm:text-5xl">
-                Lancez votre projet
-              </h2>
-              <p className="mt-4 text-sm text-zinc-400">
-                Remise de -{PROMO.percent} % appliquée automatiquement — code{" "}
-                <span className="rounded bg-white/10 px-2 py-0.5 font-code font-bold text-brand">
-                  {PROMO.code}
-                </span>
-              </p>
-            </div>
-
-            {status === "sent" ? (
-              /* ---------- Succès ---------- */
-              <div className="mt-10 flex flex-col items-center rounded-2xl border border-brand/40 bg-brand/10 p-8 text-center">
-                <CheckCircle2 className="h-12 w-12 text-brand" />
-                <p className="mt-4 font-head text-xl font-bold text-white">{SUCCESS_MESSAGE}</p>
-                <p className="mt-2 max-w-md text-sm text-zinc-400">
-                  Un membre de l'équipe SHOPIN30 vous rappelle sous 24 h — souvent bien
-                  plus vite. Vous pouvez aussi nous écrire directement sur WhatsApp.
-                </p>
-                <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-                  <a
-                    href={waLink(`Bonjour SHOPIN30 👋 Je viens d'envoyer une commande (${SERVICE_LABELS[service]}).`)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-2 rounded-full bg-wa px-5 py-2.5 text-sm font-bold text-white"
-                  >
-                    <MessageCircle className="h-4 w-4" />
-                    Suivre sur WhatsApp
-                  </a>
-                  <button
-                    type="button"
-                    onClick={() => setStatus("idle")}
-                    className="rounded-full border border-white/15 px-5 py-2.5 text-sm font-semibold text-white hover:border-brand/50"
-                  >
-                    Faire une autre commande
-                  </button>
-                </div>
-              </div>
-            ) : (
-              /* ---------- Formulaire ---------- */
-              <form onSubmit={handleSubmit} className="mt-10 space-y-5" noValidate>
-                <div className="grid gap-5 sm:grid-cols-2">
-                  <div>
-                    <label htmlFor="nom" className="mb-1.5 block text-sm font-semibold text-white">
-                      Nom <span className="text-brand">*</span>
-                    </label>
-                    <input id="nom" name="nom" type="text" autoComplete="family-name" required placeholder="Koné" className={INPUT_CLASS} />
-                  </div>
-                  <div>
-                    <label htmlFor="prenom" className="mb-1.5 block text-sm font-semibold text-white">
-                      Prénom <span className="text-brand">*</span>
-                    </label>
-                    <input id="prenom" name="prenom" type="text" autoComplete="given-name" required placeholder="Aminata" className={INPUT_CLASS} />
-                  </div>
-                </div>
-
-                <div>
-                  <label htmlFor="entreprise" className="mb-1.5 block text-sm font-semibold text-white">
-                    Entreprise <span className="font-normal text-zinc-500">(optionnel)</span>
-                  </label>
-                  <input id="entreprise" name="entreprise" type="text" autoComplete="organization" placeholder="Boutique Aminata" className={INPUT_CLASS} />
-                </div>
-
-                <div>
-                  <label htmlFor="telephone" className="mb-1.5 block text-sm font-semibold text-white">
-                    Téléphone <span className="text-brand">*</span>
-                  </label>
-                  <input
-                    id="telephone"
-                    name="telephone"
-                    type="tel"
-                    autoComplete="tel"
-                    required
-                    placeholder="+225 07 07 07 07 07"
-                    className={INPUT_CLASS}
-                  />
-                  <p className="mt-1.5 text-xs text-zinc-500">
-                    Un numéro WhatsApp de préférence — c'est le plus rapide pour vous répondre.
-                  </p>
-                </div>
-
-                <fieldset>
-                  <legend className="mb-1.5 text-sm font-semibold text-white">
-                    Service souhaité <span className="text-brand">*</span>
-                  </legend>
-                  <div className="grid gap-3 sm:grid-cols-3">
-                    {SERVICES.map((s) => (
-                      <button
-                        key={s.id}
-                        type="button"
-                        onClick={() => onServiceChange(s.id)}
-                        aria-pressed={service === s.id}
-                        className={cn(
-                          "rounded-xl border px-4 py-3 text-left text-sm font-semibold transition-colors",
-                          service === s.id
-                            ? "border-brand bg-brand/10 text-brand"
-                            : "border-white/10 bg-ink text-zinc-300 hover:border-white/25",
-                        )}
-                      >
-                        {SERVICE_LABELS[s.id]}
-                      </button>
-                    ))}
-                  </div>
-                </fieldset>
-
-                {status === "error" && (
-                  <div role="alert" className="flex items-start gap-3 rounded-xl border border-red-500/40 bg-red-500/10 p-4">
-                    <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-400" />
-                    <div className="text-sm">
-                      <p className="font-semibold text-red-300">La commande n'a pas abouti</p>
-                      <p className="mt-1 text-red-200/80">{errorMessage}</p>
-                      <a
-                        href={waLink("Bonjour SHOPIN30 👋 J'ai essayé de commander sur le site mais je préfère passer par WhatsApp.")}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-2 inline-flex items-center gap-1.5 font-semibold text-brand hover:underline"
-                      >
-                        <MessageCircle className="h-4 w-4" />
-                        Commander directement sur WhatsApp ({WHATSAPP_DISPLAY})
-                      </a>
-                    </div>
-                  </div>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={status === "sending"}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand px-6 py-4 text-sm font-bold text-ink transition-all hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60 sm:text-base"
-                >
-                  {status === "sending" ? (
-                    <>
-                      <Loader2 className="h-5 w-5 animate-spin" />
-                      Envoi en cours…
-                    </>
-                  ) : (
-                    <>
-                      <Send className="h-5 w-5" />
-                      Envoyer ma commande (-{PROMO.percent} % appliqué)
-                    </>
-                  )}
-                </button>
-
-                <p className="text-center text-xs leading-relaxed text-zinc-500">
-                  En envoyant ce formulaire, vous acceptez d'être contacté par SHOPIN30
-                  au sujet de votre commande. Vos données ne sont jamais partagées.
-                </p>
-              </form>
-            )}
+    <section className="section order-section" id="commander">
+      <div className="container order-container">
+        <div className="order-copy" data-reveal>
+          <p className="eyebrow"><span className="eyebrow-dash" /> PARLONS DE VOTRE PROJET</p>
+          <h2>Votre prochaine<br /><span>étape commence ici.</span></h2>
+          <p className="order-lead">Renseignez vos coordonnées et le service souhaité. Votre demande sera préparée dans WhatsApp pour que vous puissiez nous l'envoyer directement.</p>
+          <div className="order-promise-list">
+            <div><span><CheckCircle2 size={16} /></span><p>Un échange direct, sans jargon.</p></div>
+            <div><span><CheckCircle2 size={16} /></span><p>Un conseil adapté à votre besoin.</p></div>
+            <div><span><CheckCircle2 size={16} /></span><p>La maintenance n'est pas incluse dans le forfait.</p></div>
           </div>
+          <a className="order-whatsapp-link" href={directContact} target="_blank" rel="noopener noreferrer">
+            <MessageCircle size={17} /> Nous contacter directement <span>{WHATSAPP_DISPLAY}</span>
+          </a>
+        </div>
+
+        <div className="order-card" data-reveal>
+          <div className="order-card-top"><div><span>DEMANDE DE PROJET</span><h3>Quelques informations</h3></div><span className="order-step">01 <i>/</i> 01</span></div>
+          <form className="order-form" onSubmit={handleSubmit}>
+            <div className="form-grid">
+              <div className="form-field">
+                <label htmlFor="order-nom">Nom <span>*</span></label>
+                <input className={INPUT_CLASS} id="order-nom" name="nom" autoComplete="family-name" maxLength={100} required placeholder="Ex. Koné" />
+              </div>
+              <div className="form-field">
+                <label htmlFor="order-prenom">Prénom <span>*</span></label>
+                <input className={INPUT_CLASS} id="order-prenom" name="prenom" autoComplete="given-name" maxLength={100} required placeholder="Ex. Aminata" />
+              </div>
+            </div>
+            <div className="form-field">
+              <label htmlFor="order-entreprise">Nom de l'entreprise / business <span className="optional">Optionnel</span></label>
+              <input className={INPUT_CLASS} id="order-entreprise" name="entreprise" autoComplete="organization" maxLength={160} placeholder="Ex. Ma boutique" />
+            </div>
+            <div className="form-field">
+              <label htmlFor="order-telephone">Numéro de téléphone <span>*</span></label>
+              <input className={INPUT_CLASS} id="order-telephone" name="telephone" type="tel" autoComplete="tel" inputMode="tel" maxLength={40} required placeholder="+225 05 01 30 33 43" />
+              <small>Indicatif pays inclus. WhatsApp de préférence pour faciliter le suivi.</small>
+            </div>
+            <fieldset className="service-choice">
+              <legend>Type de service souhaité <span>*</span></legend>
+              <div className="service-choice-grid">
+                {SERVICES.map((item) => (
+                  <button key={item.id} type="button" className={`service-choice-button${service === item.id ? " is-selected" : ""}`} onClick={() => onServiceChange(item.id)} aria-pressed={service === item.id}>
+                    <span className="choice-indicator" /><span>{SERVICE_LABELS[item.id]}</span>
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+
+            {status === "error" && (
+              <div className="form-error" role="alert">
+                <AlertCircle size={18} aria-hidden="true" />
+                <div><strong>Vérifiez les informations saisies.</strong><p>{errorMessage}</p></div>
+              </div>
+            )}
+
+            <button type="submit" className="button button-primary submit-button">
+              Envoyer ma demande <MessageCircle size={17} aria-hidden="true" />
+            </button>
+            <p className="form-privacy">WhatsApp s'ouvrira avec votre demande préremplie. Vérifiez le message puis appuyez sur « Envoyer » dans WhatsApp pour nous le transmettre.</p>
+          </form>
         </div>
       </div>
     </section>
