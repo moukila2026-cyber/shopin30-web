@@ -19,14 +19,6 @@ function InterfacePreview() {
       <div className="visual-grid" aria-hidden="true" />
       <div className="visual-orbit visual-orbit-one" aria-hidden="true" />
       <div className="visual-orbit visual-orbit-two" aria-hidden="true" />
-      <figure className="hero-local-card">
-        <img
-          src={`${import.meta.env.BASE_URL}images/hero-entrepreneur-abidjan.jpg`}
-          alt="Entrepreneuse ivoirienne au travail, entre ordinateur et smartphone, dans un espace lumineux à Abidjan."
-          fetchPriority="high"
-        />
-        <figcaption><span>ABIDJAN · CÔTE D'IVOIRE</span><strong>Le digital, au plus près de votre activité.</strong></figcaption>
-      </figure>
       <div className="preview-label"><span className="preview-label-dot" /> APERÇU D'INTERFACE</div>
 
       <div className="browser-window hero-browser" role="img" aria-label="Maquette illustrative d'un tableau de bord métier, avec suivi d'activité et messages clients">
@@ -37,7 +29,7 @@ function InterfacePreview() {
         </div>
         <div className="dashboard-preview">
           <aside className="dashboard-sidebar" aria-hidden="true">
-            <div className="dashboard-brand">s<span>30</span></div>
+            <div className="dashboard-brand" aria-hidden="true"><span>S</span></div>
             <div className="dashboard-side-item active"><LayoutDashboard size={15} /><span>Vue d'ensemble</span></div>
             <div className="dashboard-side-item"><FileText size={15} /><span>Activité</span></div>
             <div className="dashboard-side-item"><UsersRound size={15} /><span>Clients</span></div>

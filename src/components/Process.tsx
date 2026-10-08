@@ -10,6 +10,14 @@ const STEPS = [
 export default function Process() {
   return (
     <section className="section process-section" id="methode">
+      <div className="section-photo-bg" aria-hidden="true">
+        <img
+          src={`${import.meta.env.BASE_URL}images/methode-backdrop.jpg`}
+          alt=""
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
       <div className="container">
         <div className="section-heading section-heading-row" data-reveal>
           <div><p className="eyebrow"><span className="eyebrow-dash" /> NOTRE MÉTHODE</p><h2>De l'idée à la mise<br /><span>en service, simplement.</span></h2></div>

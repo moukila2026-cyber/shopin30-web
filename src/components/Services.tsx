@@ -53,6 +53,14 @@ export default function Services({ onSelect }: Props) {
 
   return (
     <section className="section services-section" id="services">
+      <div className="section-photo-bg" aria-hidden="true">
+        <img
+          src={`${import.meta.env.BASE_URL}images/services-backdrop.jpg`}
+          alt=""
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
       <div className="container">
         <div className="section-heading section-heading-row" data-reveal>
           <div>
