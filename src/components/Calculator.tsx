@@ -1,10 +1,14 @@
 import { useMemo, useState, type CSSProperties } from "react";
-import { ArrowRight, Info, Layers3 } from "lucide-react";
-import { formatFCFA, SERVICES, type ServiceId } from "../lib/constants";
+import { ArrowRight, Info, Layers3, MessageCircle } from "lucide-react";
+import { formatFCFA, SERVICES, waLink, type ServiceId } from "../lib/constants";
 
 interface Props {
   onSelect: (service: ServiceId) => void;
 }
+
+/** Les services sur devis (contact direct WhatsApp) ne passent pas par l'estimation. */
+const ESTIMABLE_SERVICES = SERVICES.filter((item) => !item.contactOnly);
+const CONTACT_ONLY_SERVICE = SERVICES.find((item) => item.contactOnly);
 
 function roundToFiveThousand(value: number): number {
   return Math.round(value / 5_000) * 5_000;
@@ -13,14 +17,16 @@ function roundToFiveThousand(value: number): number {
 export default function Calculator({ onSelect }: Props) {
   const [serviceId, setServiceId] = useState<ServiceId>("site");
   const [scope, setScope] = useState(3);
-  const service = SERVICES.find((item) => item.id === serviceId)!;
+  const service = ESTIMABLE_SERVICES.find((item) => item.id === serviceId)!;
   const scopeProgress = ((scope - 1) / 7) * 100;
 
   const estimate = useMemo(() => {
-    const distance = service.maxPrice - service.minPrice;
+    const minPrice = service.minPrice ?? 0;
+    const maxPrice = service.maxPrice ?? 0;
+    const distance = maxPrice - minPrice;
     const progress = (scope - 1) / 7;
-    const low = service.minPrice + distance * (0.08 + progress * 0.42);
-    const high = service.minPrice + distance * (0.46 + progress * 0.46);
+    const low = minPrice + distance * (0.08 + progress * 0.42);
+    const high = minPrice + distance * (0.46 + progress * 0.46);
     return {
       low: roundToFiveThousand(low),
       high: roundToFiveThousand(high),
@@ -40,13 +46,25 @@ export default function Calculator({ onSelect }: Props) {
         <div className="calculator-panel" data-reveal>
           <div className="calculator-step-label"><span>01</span><div><strong>Quel service recherchez-vous ?</strong><small>Choisissez une solution</small></div></div>
           <div className="calculator-options" role="group" aria-label="Type de service souhaité">
-            {SERVICES.map((item) => (
+            {ESTIMABLE_SERVICES.map((item) => (
               <button key={item.id} type="button" className={`calculator-option${serviceId === item.id ? " is-selected" : ""}`} aria-pressed={serviceId === item.id} onClick={() => setServiceId(item.id)}>
-                <span>{item.name.replace(" professionnel", "").replace(" sur mesure", "")}</span>
+                <span>{item.shortName}</span>
                 <i aria-hidden="true" />
               </button>
             ))}
           </div>
+          {CONTACT_ONLY_SERVICE && (
+            <a
+              className="calculator-video-hint"
+              href={waLink(CONTACT_ONLY_SERVICE.contactMessage ?? "Bonjour SHOPIN30, j'aimerais parler de mon projet.")}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <MessageCircle size={13} aria-hidden="true" />
+              <span><strong>{CONTACT_ONLY_SERVICE.shortName} ?</strong> Sur devis — contactez-nous directement sur WhatsApp pour en discuter.</span>
+              <ArrowRight size={13} aria-hidden="true" />
+            </a>
+          )}
 
           <div className="calculator-divider" />
 
