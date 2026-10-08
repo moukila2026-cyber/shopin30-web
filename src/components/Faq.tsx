@@ -15,6 +15,10 @@ const QUESTIONS = [
     answer: "Nous reprenons contact par téléphone ou sur WhatsApp pour comprendre votre activité et préciser les pages ou fonctionnalités souhaitées. Vous recevez ensuite un devis détaillé et un délai prévisionnel à valider.",
   },
   {
+    question: "Comment fonctionnent le nom de domaine et l’hébergement ?",
+    answer: "Le nom de domaine est votre adresse sur Internet (par exemple : votreentreprise.com). L’hébergement permet de rendre votre site web ou votre mini-application accessible en ligne. Nous vous accompagnons pour choisir un domaine ou réutiliser une adresse existante, puis définir un hébergement adapté. Une mini-application peut aussi utiliser un sous-domaine (par exemple : app.votreentreprise.com). Le devis précise les frais de mise en ligne, les éventuels abonnements et les renouvellements du domaine et de l’hébergement. Ces éléments sont distincts de la maintenance, qui n’est pas incluse dans le forfait.",
+  },
+  {
     question: "Peut-on demander des modifications ?",
     answer: "Oui. Les étapes de retours et de validation sont prévues pendant la conception. Si une demande modifie le périmètre convenu, nous vous expliquons clairement l'impact éventuel sur le prix et le délai avant de la réaliser.",
   },

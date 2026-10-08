@@ -114,7 +114,7 @@ const PROJECTS = [
   {
     name: "ComptaCI",
     url: "https://comptaci.vercel.app",
-    type: "SaaS de gestion",
+    type: "App web de gestion",
     description: "Une interface de pilotage conçue pour rendre les informations de gestion plus claires et accessibles.",
     component: ComptaPreview,
   },
@@ -133,7 +133,7 @@ export default function Realisations() {
       <div className="container">
         <div className="section-heading section-heading-row" data-reveal>
           <div><p className="eyebrow"><span className="eyebrow-dash" /> NOS RÉALISATIONS</p><h2>Des projets concrets.<br /><span>Des interfaces utiles.</span></h2></div>
-          <p className="section-lead">Découvrez deux SaaS déjà réalisés par SHOPIN30 : ComptaCI et KAISSE.</p>
+          <p className="section-lead">Découvrez deux App web déjà réalisées par SHOPIN30 : ComptaCI et KAISSE.</p>
         </div>
 
         <div className="projects-grid">

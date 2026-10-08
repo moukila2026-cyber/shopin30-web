@@ -27,6 +27,7 @@ Le bouton flottant, les boutons de commande et les liens de contact utilisent le
 - Site web professionnel : **100 000 à 350 000 FCFA**.
 - Application web sur mesure : **200 000 à 400 000 FCFA**.
 - CRM connecté à WhatsApp : **100 000 à 250 000 FCFA**.
+- Pour les sites web et les applications web (y compris les mini-applications), le nom de domaine ou sous-domaine, l’hébergement, leurs coûts et leurs renouvellements sont précisés dans le devis.
 - La maintenance n'est pas incluse dans les forfaits.
 
 ## Réalisations
@@ -34,7 +35,7 @@ Le bouton flottant, les boutons de commande et les liens de contact utilisent le
 - ComptaCI : https://comptaci.vercel.app
 - KAISSE : https://kaissseapp.vercel.app
 
-Les aperçus dessinés dans la section Réalisations sont des maquettes d'interface avec des données illustratives ; les liens ouvrent les SaaS réels.
+Les aperçus dessinés dans la section Réalisations sont des maquettes d'interface avec des données illustratives ; les liens ouvrent les App web réelles.
 
 ## Structure
 
