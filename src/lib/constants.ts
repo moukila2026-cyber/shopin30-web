@@ -9,29 +9,35 @@ export function waLink(message: string): string {
   return `${WHATSAPP_URL}?text=${encodeURIComponent(message)}`;
 }
 
-export type ServiceId = "site" | "app" | "crm";
+export type ServiceId = "site" | "app" | "crm" | "video";
 
 export const SERVICE_LABELS: Record<ServiceId, string> = {
   site: "Site web professionnel",
   app: "Application web sur mesure",
   crm: "CRM connecté à WhatsApp",
+  video: "Conception de vidéo IA pour PUB",
 };
 
 export interface Service {
   id: ServiceId;
   name: string;
+  /** Libellé court utilisé dans les boutons compacts (calculateur, etc.). */
+  shortName: string;
   tagline: string;
   minPrice: number;
   maxPrice: number;
   scopeUnit: string;
   scopeQuestion: string;
   features: string[];
+  /** Mis en avant visuellement comme nouveauté. */
+  isNew?: boolean;
 }
 
 export const SERVICES: Service[] = [
   {
     id: "site",
     name: "Site web professionnel",
+    shortName: "Site web",
     tagline:
       "Pour présenter votre entreprise ou vos produits, et être visible partout, à tout moment.",
     minPrice: 100_000,
@@ -47,6 +53,7 @@ export const SERVICES: Service[] = [
   {
     id: "app",
     name: "Application web sur mesure",
+    shortName: "Application web",
     tagline:
       "Pour digitaliser vos processus et gérer votre activité plus efficacement.",
     minPrice: 200_000,
@@ -62,6 +69,7 @@ export const SERVICES: Service[] = [
   {
     id: "crm",
     name: "CRM connecté à WhatsApp",
+    shortName: "CRM WhatsApp",
     tagline:
       "Pour centraliser vos échanges clients et ne plus jamais perdre un message.",
     minPrice: 100_000,
@@ -73,6 +81,23 @@ export const SERVICES: Service[] = [
       "Un suivi des demandes et des prochaines actions",
       "Une connexion WhatsApp définie au cadrage",
     ],
+  },
+  {
+    id: "video",
+    name: "Conception de vidéo IA pour PUB",
+    shortName: "Vidéo IA pour PUB",
+    tagline:
+      "Pour des publicités vidéo percutantes générées par IA, prêtes à diffuser sur vos réseaux sociaux.",
+    minPrice: 50_000,
+    maxPrice: 200_000,
+    scopeUnit: "vidéos",
+    scopeQuestion: "Combien de vidéos publicitaires ?",
+    features: [
+      "Des vidéos créées par IA, adaptées à votre marque",
+      "Des formats pensés pour WhatsApp, TikTok et Facebook",
+      "Un message publicitaire clair qui attire vos clients",
+    ],
+    isNew: true,
   },
 ];
 

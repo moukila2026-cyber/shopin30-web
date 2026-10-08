@@ -42,7 +42,7 @@ export default function Calculator({ onSelect }: Props) {
           <div className="calculator-options" role="group" aria-label="Type de service souhaité">
             {SERVICES.map((item) => (
               <button key={item.id} type="button" className={`calculator-option${serviceId === item.id ? " is-selected" : ""}`} aria-pressed={serviceId === item.id} onClick={() => setServiceId(item.id)}>
-                <span>{item.name.replace(" professionnel", "").replace(" sur mesure", "")}</span>
+                <span>{item.shortName}</span>
                 <i aria-hidden="true" />
               </button>
             ))}

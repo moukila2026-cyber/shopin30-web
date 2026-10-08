@@ -1,10 +1,11 @@
-import { ArrowRight, Check, Globe2, LayoutDashboard, MessageCircle, MessageSquareText } from "lucide-react";
+import { ArrowRight, Check, Clapperboard, Globe2, LayoutDashboard, MessageCircle, MessageSquareText } from "lucide-react";
 import { formatFCFA, SERVICES, type Service, type ServiceId, waLink } from "../lib/constants";
 
 const ICONS: Record<ServiceId, typeof Globe2> = {
   site: Globe2,
   app: LayoutDashboard,
   crm: MessageSquareText,
+  video: Clapperboard,
 };
 
 interface Props {
@@ -15,10 +16,11 @@ function ServiceCard({ service, index, onSelect }: { service: Service; index: nu
   const Icon = ICONS[service.id];
 
   return (
-    <article className={`service-card${service.id === "crm" ? " service-card-featured" : ""}`} data-reveal>
+    <article className={`service-card${service.id === "crm" ? " service-card-featured" : ""}${service.isNew ? " service-card-new" : ""}`} data-reveal>
+      {service.isNew && <span className="service-new-badge">Nouveau</span>}
       <div className="service-card-top">
         <span className="service-icon"><Icon size={21} strokeWidth={1.7} aria-hidden="true" /></span>
-        <span className="service-number">0{index + 1} / 03</span>
+        <span className="service-number">0{index + 1} / 0{SERVICES.length}</span>
       </div>
       <h3>{service.name}</h3>
       <p className="service-description">{service.tagline}</p>
@@ -68,7 +70,7 @@ export default function Services({ onSelect }: Props) {
             <h2>Le bon outil pour<br /><span>faire avancer votre activité.</span></h2>
           </div>
           <p className="section-lead">
-            Du site professionnel au CRM WhatsApp, chaque solution est cadrée selon votre objectif, votre budget et les besoins réels de votre activité.
+            Du site professionnel à la vidéo publicitaire conçue par IA, chaque solution est cadrée selon votre objectif, votre budget et les besoins réels de votre activité.
           </p>
         </div>
 
