@@ -11,6 +11,10 @@ interface Props {
 
 const INPUT_CLASS = "form-input";
 
+/** Les services sur devis (contact direct WhatsApp) ne passent pas par le formulaire. */
+const FORM_SERVICES = SERVICES.filter((item) => !item.contactOnly);
+const CONTACT_ONLY_SERVICE = SERVICES.find((item) => item.contactOnly);
+
 export default function OrderForm({ service, onServiceChange }: Props) {
   const [status, setStatus] = useState<Status>("idle");
   const [errorMessage, setErrorMessage] = useState("");
@@ -95,12 +99,23 @@ export default function OrderForm({ service, onServiceChange }: Props) {
             <fieldset className="service-choice">
               <legend>Type de service souhaité <span>*</span></legend>
               <div className="service-choice-grid">
-                {SERVICES.map((item) => (
+                {FORM_SERVICES.map((item) => (
                   <button key={item.id} type="button" className={`service-choice-button${service === item.id ? " is-selected" : ""}`} onClick={() => onServiceChange(item.id)} aria-pressed={service === item.id}>
                     <span className="choice-indicator" /><span>{SERVICE_LABELS[item.id]}</span>
                   </button>
                 ))}
               </div>
+              {CONTACT_ONLY_SERVICE && (
+                <a
+                  className="order-video-hint"
+                  href={waLink(CONTACT_ONLY_SERVICE.contactMessage ?? "Bonjour SHOPIN30, j'aimerais parler de mon projet.")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <MessageCircle size={13} aria-hidden="true" />
+                  <span><strong>{CONTACT_ONLY_SERVICE.shortName} ?</strong> Ce service est sur devis : écrivez-nous directement sur WhatsApp.</span>
+                </a>
+              )}
             </fieldset>
 
             {status === "error" && (

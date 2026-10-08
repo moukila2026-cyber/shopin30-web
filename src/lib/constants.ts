@@ -15,7 +15,7 @@ export const SERVICE_LABELS: Record<ServiceId, string> = {
   site: "Site web professionnel",
   app: "Application web sur mesure",
   crm: "CRM connecté à WhatsApp",
-  video: "Conception de vidéo IA pour PUB",
+  video: "Conception de vidéo IA & Motion Design (PUB)",
 };
 
 export interface Service {
@@ -24,13 +24,17 @@ export interface Service {
   /** Libellé court utilisé dans les boutons compacts (calculateur, etc.). */
   shortName: string;
   tagline: string;
-  minPrice: number;
-  maxPrice: number;
+  minPrice?: number;
+  maxPrice?: number;
   scopeUnit: string;
   scopeQuestion: string;
   features: string[];
   /** Mis en avant visuellement comme nouveauté. */
   isNew?: boolean;
+  /** Service sur devis : contact direct sur WhatsApp, sans estimation ni formulaire. */
+  contactOnly?: boolean;
+  /** Message WhatsApp prérempli pour les services en contact direct. */
+  contactMessage?: string;
 }
 
 export const SERVICES: Service[] = [
@@ -84,20 +88,21 @@ export const SERVICES: Service[] = [
   },
   {
     id: "video",
-    name: "Conception de vidéo IA pour PUB",
-    shortName: "Vidéo IA pour PUB",
+    name: "Conception de vidéo IA & Motion Design",
+    shortName: "Vidéo IA & Motion Design",
     tagline:
-      "Pour des publicités vidéo percutantes générées par IA, prêtes à diffuser sur vos réseaux sociaux.",
-    minPrice: 50_000,
-    maxPrice: 200_000,
+      "Pour des publicités vidéo percutantes créées par IA et en motion design, prêtes à diffuser sur vos réseaux sociaux.",
     scopeUnit: "vidéos",
     scopeQuestion: "Combien de vidéos publicitaires ?",
     features: [
-      "Des vidéos créées par IA, adaptées à votre marque",
+      "Des vidéos IA et motion design adaptées à votre marque",
       "Des formats pensés pour WhatsApp, TikTok et Facebook",
       "Un message publicitaire clair qui attire vos clients",
     ],
     isNew: true,
+    contactOnly: true,
+    contactMessage:
+      "Bonjour SHOPIN30, je suis intéressé par la conception de vidéo IA / Motion Design pour ma publicité. J'aimerais en discuter avec vous.",
   },
 ];
 
